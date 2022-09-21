@@ -11,13 +11,13 @@ from multiprocessing import Process, Pool
 circleRadius = 0.9
 
 # Nombre d'echantillons de la methode de Monte Carlo (nombre de "marches aleatoire")
-walkSamples = 16
+walkSamples = 32
 
 # Distance limite en dessous de laquelle on considere que l'on est assez proche du bord
 epsilon = 0.01
 
 # Resolution en pixel de l'echantillonnage des positions initiales
-imageSample = 32
+imageSample = 64
 
 
 # Functions
@@ -31,10 +31,10 @@ def norm(p):
 # User-defined fonction providing the value of the boundary at a given position p (this is the function g(x))
 def functionBoundary(p):
     # Example of function, but can be anything
-    if p[1]>0:
-        return 1
+    if p[2]>0:
+        return 10
     else:
-        return 0.2
+        return 0
 
 # Implementation of the solver
 def solve(p0, F):
@@ -77,7 +77,9 @@ def image_task(kx,ky,kz):
 if __name__ == '__main__':
 
     # Generate the picture from all the initial positions in a grid
-    res = np.zeros((imageSample,imageSample))
+    res1 = np.zeros((imageSample,imageSample))
+    res2 = np.zeros((imageSample,imageSample))
+    res3 = np.zeros((imageSample,imageSample))
     waiting_work_list = []
     for kx in range(imageSample):
         for ky in range(imageSample):
@@ -106,9 +108,23 @@ if __name__ == '__main__':
             ky = tmp[1]
             kz = tmp[2]
             re = tmp[3]
-            res[kx,ky] = re
+            if kz == imageSample//2:
+                res1[kx,ky] = re
+            if ky == imageSample//2:
+                res2[kx,kz] = re
+            if kx == imageSample//2:
+                res3[ky,kz] = re
 
     # Display the results
+    plt.figure(1)
     plt.gray()
-    plt.imshow(res)
+    plt.imshow(res1)
+    plt.show()
+    plt.figure(2)
+    plt.gray()
+    plt.imshow(res2)
+    plt.show()
+    plt.figure(3)
+    plt.gray()
+    plt.imshow(res3)
     plt.show()
