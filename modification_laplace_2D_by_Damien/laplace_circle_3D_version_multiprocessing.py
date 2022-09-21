@@ -17,7 +17,7 @@ walkSamples = 32
 epsilon = 0.01
 
 # Resolution en pixel de l'echantillonnage des positions initiales
-imageSample = 64
+imageSample = 128
 
 
 # Functions
@@ -88,9 +88,9 @@ if __name__ == '__main__':
 
 
 
-    pool = multiprocessing.Pool(6)
-    print(len(waiting_work_list))
-    # pool = multiprocessing.Pool(multiprocessing.cpu_count())
+    #pool = multiprocessing.Pool(6)
+    print(len(waiting_work_list),multiprocessing.cpu_count())
+    pool = multiprocessing.Pool(multiprocessing.cpu_count())
 
 #################################
     result = []
@@ -119,11 +119,11 @@ if __name__ == '__main__':
     plt.figure(1)
     plt.gray()
     plt.imshow(res1)
-    plt.show()
+    #plt.show()
     plt.figure(2)
     plt.gray()
     plt.imshow(res2)
-    plt.show()
+    #plt.show()
     plt.figure(3)
     plt.gray()
     plt.imshow(res3)

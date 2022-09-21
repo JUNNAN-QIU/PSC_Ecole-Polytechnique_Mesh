@@ -86,9 +86,9 @@ if __name__ == '__main__':
         for ky in range(imageSample):
             waiting_work_list.append((kx, ky))
 
-    pool = multiprocessing.Pool(3)
+    #pool = multiprocessing.Pool(3)
     print(len(waiting_work_list))
-    # pool = multiprocessing.Pool(multiprocessing.cpu_count())
+    pool = multiprocessing.Pool(multiprocessing.cpu_count())
     result = []
     for kx,ky in waiting_work_list:
         result.append(pool.apply_async(func=image_task,args=(kx,ky)))
