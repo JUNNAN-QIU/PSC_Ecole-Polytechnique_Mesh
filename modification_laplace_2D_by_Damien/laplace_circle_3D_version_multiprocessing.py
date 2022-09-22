@@ -1,4 +1,5 @@
 import math
+from turtle import color
 import numpy as np
 import matplotlib.pyplot as plt
 import multiprocessing
@@ -17,7 +18,7 @@ walkSamples = 32
 epsilon = 0.01
 
 # Resolution en pixel de l'echantillonnage des positions initiales
-imageSample = 128
+imageSample = 32
 
 
 # Functions
@@ -116,15 +117,19 @@ if __name__ == '__main__':
                 res3[ky,kz] = re
 
     # Display the results
-    plt.figure(1)
+    plt.figure(figsize=(10,5), facecolor   = 'black')
+    plt.subplot(1,3,1)
     plt.gray()
+    plt.title("xOy", fontsize=10 ,color='white')
     plt.imshow(res1)
     #plt.show()
-    plt.figure(2)
+    plt.subplot(1,3,2)
     plt.gray()
+    plt.title("yOz", fontsize=10 ,color='white')
     plt.imshow(res2)
     #plt.show()
-    plt.figure(3)
+    plt.subplot(1,3,3)
     plt.gray()
+    plt.title("xOz", fontsize=10 ,color='white')
     plt.imshow(res3)
     plt.show()
