@@ -1,4 +1,5 @@
 
+from re import X
 import numpy as np
 from numpy.lib import math
 
@@ -61,7 +62,7 @@ class SDF_3D:
         return rt
 
 
-class SDF_sphere_3D(SDF_3D):
+class sphere(SDF_3D):
     def __init__(self, rayon):
         self.s = rayon
 
@@ -98,3 +99,4 @@ class sdLink(SDF_3D):
         q = vec3(p.x, max(abs(p.y)-self.le, 0.0), p.z)
         q_xy = vec2(q.x, q.y)
         return vec2(q_xy.norm2d()-self.r1, q.z).norm2d() - self.r2
+

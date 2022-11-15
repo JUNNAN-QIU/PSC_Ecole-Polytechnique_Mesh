@@ -1,26 +1,44 @@
-from sdf_3D import *
+from matplotlib import cm
+from sdf_3D_class import *
 import math
 import numpy as np
 import matplotlib.pyplot as plt
 import multiprocessing
 from multiprocessing import Process, Pool
+import yaml
+import ipyvolume as ipv
+from mpl_toolkits import mplot3d
+from pylab import *    # fig = plt.figure(4)
+    # ax = fig.add_subplot(111, projection='3d')
+    
+    
+    # # creating the heatmap
+    # img = ax.scatter(x_for_plot, y_for_plot, z_for_plot, c=re_for_plot, cmap='Greens')
+    
+    # # adding title and labels
+    # ax.set_title("3D Heatmap")
+    # ax.set_xlabel('X-axis')
+    # ax.set_ylabel('Y-axis')
+    # ax.set_zlabel('Z-axis')
+    
+    # # displaying plot
+    # plt.show()
+    # fig = plt.figure(4)
+    # ax = fig.add_subplot(111, projection='3d')
+    
+    
+    # # creating the heatmap
+    # img = ax.scatter(x_for_plot, y_for_plot, z_for_plot, c=re_for_plot, cmap='Greens')
+    
+    # # adding title and labels
+    # ax.set_title("3D Heatmap")
+    # ax.set_xlabel('X-axis')
+    # ax.set_ylabel('Y-axis')
+    # ax.set_zlabel('Z-axis')
+    
+    # # displaying plot
+    # plt.show()
 
-# Variables globales
-########################
-
-# Rayon du cercle utilise en tant que frontiere
-circleRadius = 0.9
-
-# Nombre d'echantillons de la methode de Monte Carlo (nombre de "marches aleatoire")
-walkSamples = 32
-
-# Distance limite en dessous de laquelle on considere que l'on est assez proche du bord
-epsilon = 0.01
-
-# Resolution en pixel de l'echantillonnage des positions initiales
-imageSample = 128
-
-# Functions
 ##########################
 
 
@@ -34,7 +52,7 @@ def functionBoundary(p):
     if p.z > 0:
         return 1
     else:
-        return 0.2
+        return 0
 
 # Implementation of the solver
 
@@ -74,12 +92,18 @@ def image_task(kx, ky, kz, sdf_current):
 
 
 if __name__ == '__main__':
+    path_yaml = "template.yaml"
+    dict_yaml = yaml.load(open(path_yaml).read(), Loader=yaml.Loader)
 
-    # sdf_current = SDF_sphere_3D(0.9)
-    # sdf_current = sdBox(vec3(0.9,0.8,0.7))
-    # sdf_current = sdRoundBox(vec3(0.8,0.8,0.7),0.1)
-    sdf_current = sdLink(0.5, 0.2, 0.1)
+    sdf_current = None  # Just for eliminating the warning
+    LOC = "sdf_current = " + dict_yaml["sdf"]
+    exec(LOC)
 
+    walkSamples = dict_yaml["walkSamples"]
+    epsilon = dict_yaml["epsilon"]
+    imageSample = dict_yaml["imageSample"]
+
+    V = np.zeros((imageSample,imageSample,imageSample))
     # Generate the picture from all the initial positions in a grid
     res1 = np.zeros((imageSample, imageSample))
     res2 = np.zeros((imageSample, imageSample))
@@ -90,9 +114,9 @@ if __name__ == '__main__':
             for kz in range(imageSample):
                 waiting_work_list.append((kx, ky, kz))
 
-    pool = multiprocessing.Pool(6)
+    # pool = multiprocessing.Pool(6)
     print(len(waiting_work_list))
-    # pool = multiprocessing.Pool(multiprocessing.cpu_count())
+    pool = multiprocessing.Pool(multiprocessing.cpu_count())
 
 #################################
     result = []
@@ -102,15 +126,28 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
 
+    x_for_plot = []
+    y_for_plot = []
+    z_for_plot = []
+    re_for_plot = []
+
     for r in result:
         tmp = r.get()
         if tmp == None:
             continue
         else:
+            x_for_plot.append(tmp[0])
+            y_for_plot.append(tmp[1])
+            z_for_plot.append(tmp[2])
+            re_for_plot.append(tmp[3])
+
+            V[tmp[0]][tmp[1]][tmp[2]] = tmp[3]*100//100
+
             kx = tmp[0]
             ky = tmp[1]
             kz = tmp[2]
             re = tmp[3]
+
             if kz == imageSample//2:
                 res1[kx, ky] = re
             if ky == imageSample//2:
@@ -130,4 +167,22 @@ if __name__ == '__main__':
     plt.figure(3)
     plt.gray()
     plt.imshow(res3)
+
+
+
+    # creating figures)
+    fig = plt.figure(4)
+    ax = fig.add_subplot(111, projection='3d')
+    
+    
+    # creating the heatmap
+    img = ax.scatter(x_for_plot, y_for_plot, z_for_plot, c=re_for_plot, cmap='Greens')
+    
+    # adding title and labels
+    ax.set_title("3D Heatmap")
+    ax.set_xlabel('X-axis')
+    ax.set_ylabel('Y-axis')
+    ax.set_zlabel('Z-axis')
+    
+    # displaying plot
     plt.show()
